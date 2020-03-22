@@ -71,7 +71,29 @@ func (service *Service) All() (models []ModelOperationsLog, err error) {
 	return models, nil
 }
 
-func (service *Service) ShowOperationsLogById(id int) (model []ModelOperationsLog, err error) {
+func (service *Service) UserShowTransferLogByIdCard(idCard int, idUser int) (model []ModelOperationsLog, err error) {
+	modHistoryLog := ModelOperationsLog{}
+	err = service.pool.QueryRow(context.Background(), `
+SELECT id, name, number, recipientSender, count, balanceold, balancenew, time, owner_id 
+FROM historyoperationslog WHERE id=$1 and owner_id=$2`, idCard, idUser).Scan(
+		&modHistoryLog.Id,
+		&modHistoryLog.Name,
+		&modHistoryLog.Number,
+		&modHistoryLog.RecipientSender,
+		&modHistoryLog.Count,
+		&modHistoryLog.BalanceOld,
+		&modHistoryLog.BalanceNew,
+		&modHistoryLog.Time,
+		&modHistoryLog.OwnerID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("can't get history from db: %w", err)
+	}
+	model = append(model, modHistoryLog)
+	return model, nil
+}
+
+func (service *Service) AdminShowTransferLogByIdCadr(id int) (model []ModelOperationsLog, err error) {
 	modHistoryLog := ModelOperationsLog{}
 	err = service.pool.QueryRow(context.Background(), `
 SELECT id, name, number, recipientSender, count, balanceold, balancenew, time, owner_id 

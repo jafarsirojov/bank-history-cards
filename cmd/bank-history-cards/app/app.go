@@ -37,13 +37,26 @@ func (m *MainServer) HandleGetAllShowOperationsLog(writer http.ResponseWriter, r
 		return
 	}
 	log.Print(authentication)
-	if authentication.Id != 0 {
-		log.Printf("can't authentication is not admin, this id user = %d", authentication.Id)
-		writer.WriteHeader(http.StatusBadRequest)
+	if authentication.Id == 0 {
+		log.Print("admin")
+		log.Print("all history")
+		models, err := m.cardsSvc.All()
+		if err != nil {
+			log.Print("can't get all history")
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		log.Print(models)
+		err = rest.WriteJSONBody(writer, models)
+		if err != nil {
+			log.Print("can't write json get all history")
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		return
 	}
-	log.Print("all history")
-	models, err := m.cardsSvc.All()
+	log.Print("all history cards user")
+	models, err := m.cardsSvc.ShowOperationsLogByOwnerId(authentication.Id)
 	if err != nil {
 		log.Print("can't get all history")
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -71,24 +84,46 @@ func (m *MainServer) HandleGetShowOperationsLogById(writer http.ResponseWriter, 
 		return
 	}
 	log.Print(authentication)
-	log.Print("user by id")
+	log.Print("transfer history by id card")
 	value, ok := mux.FromContext(request.Context(), "id")
 	if !ok {
-		log.Print("can't get all history")
+		log.Print("can't history by id card")
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	id, err := strconv.Atoi(value)
-	models, err := m.cardsSvc.ShowOperationsLogById(id)
 	if err != nil {
-		log.Print("can't get all history")
-		writer.WriteHeader(http.StatusInternalServerError)
+		log.Printf("can't strconv atoi: %d", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if authentication.Id == 0 {
+		log.Print("admin")
+		models, err := m.cardsSvc.AdminShowTransferLogByIdCadr(id)
+		if err != nil {
+			log.Printf("can't history %d", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		log.Print(models)
+		err = rest.WriteJSONBody(writer, models)
+		if err != nil {
+			log.Printf("can't write json get all history %d", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+	models, err := m.cardsSvc.UserShowTransferLogByIdCard(id,authentication.Id)
+	if err != nil {
+		log.Printf("can't history is not owner %d", err)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	log.Print(models)
 	err = rest.WriteJSONBody(writer, models)
 	if err != nil {
-		log.Print("can't write json get all history")
+		log.Printf("can't write json get all history %d", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -107,7 +142,7 @@ func (m *MainServer) HandlePostAddHistory(writer http.ResponseWriter, request *h
 		return
 	}
 	log.Print(authentication)
-	log.Print("post user")
+	log.Print("post add history transfer")
 	model := history.ModelOperationsLog{}
 
 	err := rest.ReadJSONBody(request, &model)
@@ -117,36 +152,10 @@ func (m *MainServer) HandlePostAddHistory(writer http.ResponseWriter, request *h
 		return
 	}
 	log.Println(model)
+	if model.Id != 0 {
+		log.Printf("id card not 0!")
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	m.cardsSvc.AddNewHistory(model)
-
-}
-
-func (m *MainServer) HandleGetShowOperationsLogByOwnerId(writer http.ResponseWriter, request *http.Request) {
-	authentication, ok := jwt.FromContext(request.Context()).(*auth.Auth)
-	if !ok {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Print("can't authentication is not ok")
-		return
-	}
-	if authentication == nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		log.Print("can't authentication is nil")
-		return
-	}
-	log.Print(authentication)
-	log.Print("user by id")
-	id := authentication.Id
-	models, err := m.cardsSvc.ShowOperationsLogByOwnerId(id)
-	if err != nil {
-		log.Print("can't get all history")
-		writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	log.Print(models)
-	err = rest.WriteJSONBody(writer, models)
-	if err != nil {
-		log.Print("can't write json get all history")
-		writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 }

@@ -61,19 +61,13 @@ func main() {
 		requestIdier,
 		logger,
 	)
-	exactMux.GET("/api/history/{id}",
+	exactMux.GET("/api/history/cards/{id}",
 		server.HandleGetShowOperationsLogById,
 		jwtMiddleware,
 		requestIdier,
 		logger,
 	)
-	exactMux.GET("/api/history/ownerid/{id}",
-		server.HandleGetShowOperationsLogByOwnerId,
-		jwtMiddleware,
-		requestIdier,
-		logger,
-	)
-	exactMux.POST("/api/history/{id}",
+	exactMux.POST("/api/history",
 		server.HandlePostAddHistory,
 		jwtMiddleware,
 		requestIdier,
