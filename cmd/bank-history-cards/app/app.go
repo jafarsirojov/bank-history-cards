@@ -25,6 +25,7 @@ func (m *MainServer) ServeHTTP(writer http.ResponseWriter, request *http.Request
 }
 
 func (m *MainServer) HandleGetAllShowOperationsLog(writer http.ResponseWriter, request *http.Request) {
+	log.Print("start handler history")
 	authentication, ok := jwt.FromContext(request.Context()).(*auth.Auth)
 	if !ok {
 		writer.WriteHeader(http.StatusBadRequest)
@@ -69,6 +70,7 @@ func (m *MainServer) HandleGetAllShowOperationsLog(writer http.ResponseWriter, r
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	log.Print("finish history handler")
 }
 
 func (m *MainServer) HandleGetShowOperationsLogById(writer http.ResponseWriter, request *http.Request) {
@@ -130,6 +132,7 @@ func (m *MainServer) HandleGetShowOperationsLogById(writer http.ResponseWriter, 
 }
 
 func (m *MainServer) HandlePostAddHistory(writer http.ResponseWriter, request *http.Request) {
+	log.Print("starting save new history")
 	authentication, ok := jwt.FromContext(request.Context()).(*auth.Auth)
 	if !ok {
 		writer.WriteHeader(http.StatusBadRequest)
@@ -145,17 +148,26 @@ func (m *MainServer) HandlePostAddHistory(writer http.ResponseWriter, request *h
 	log.Print("post add history transfer")
 	model := history.ModelOperationsLog{}
 
+	log.Print("start read json body is save new history")
 	err := rest.ReadJSONBody(request, &model)
 	if err != nil {
 		log.Printf("can't READ json POST model: %d", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	log.Print("finish read json body is save new history")
 	log.Println(model)
 	if model.Id != 0 {
 		log.Printf("id card not 0!")
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	m.cardsSvc.AddNewHistory(model)
+	log.Print("start func add new history is handler")
+	err = m.cardsSvc.AddNewHistory(model)
+	if err != nil {
+		log.Printf("can't add (save) history %d", err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	log.Print("finish add new history")
 }

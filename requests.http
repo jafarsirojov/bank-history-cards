@@ -1,17 +1,18 @@
-POST http://localhost:9010/api/history/0
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6IlBldHlhIiwiZXhwIjoxNTg0NzA5MDUwfQ.5N3oREIhPW6gPo30GzStAGTus_F2nYQfBFzxi8zNX8I
+POST http://localhost:9010/api/history
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNTg2NTUwMjQ2LCJwaG9uZSI6OTExfQ.E8p6UCwnsEsI2Ohloe_sn5Ckr4ebOxDY7EZ09e3naYc
 Content-Type: application/json
 Accept: application/json
 
 {
-  "Name": "Transfer money",
-  "Number": "202160000000001",
-  "RecipientSender": "sender",
-  "Count": 150,
-  "BalanceOld": 200,
-  "BalanceNew": 50,
-  "Time": 1584689646,
-  "OwnerID": 1
+  "id": 0,
+  "name": "Transfer_money",
+  "number": "202160000000001",
+  "recipientsender": "sender",
+  "count": 10,
+  "balanceold": 33,
+  "balancenew": 23,
+  "time": 1584689800,
+  "ownerid": 2
 }
 
 
@@ -23,7 +24,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6I
 ###
 # Has Admin list history
 GET http://localhost:9010/api/history
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6IlBldHlhIiwiZXhwIjoxNTg0NzA5MDUwfQ.5N3oREIhPW6gPo30GzStAGTus_F2nYQfBFzxi8zNX8I
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNTg3MTg3MTk0LCJwaG9uZSI6OTExfQ.qiNnruVjbod9lP5g4_33kaWPpGCf2OHMBwwl6--Jt3g
 
 ###
 #
@@ -32,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6I
 ###
 
 GET http://localhost:9009/api/cards
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6IlBldHlhIiwiZXhwIjoxNTg0Njg1NDAzfQ.-72pg0Axdjf06ayPxSzlGc6P_ZpV0xTDwdG3O2vDX6E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNTg3MTg2NTM3LCJwaG9uZSI6OTExfQ.xewl5n66Wm35ba8FzXSPmQGTGqp4C2vfJhIvLjIFg34
 
 ###
 

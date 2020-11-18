@@ -115,30 +115,43 @@ FROM historyoperationslog WHERE id=$1`, id).Scan(
 	return model, nil
 }
 
-func (service *Service) ShowOperationsLogByOwnerId(id int) (model []ModelOperationsLog, err error) {
-	modHistoryLog := ModelOperationsLog{}
-	err = service.pool.QueryRow(context.Background(), `
-SELECT id, name, number, recipientSender, count, balanceold, balancenew, time, owner_id 
-FROM historyoperationslog WHERE owner_id=`, id).Scan(
-		&modHistoryLog.Id,
-		&modHistoryLog.Name,
-		&modHistoryLog.Number,
-		&modHistoryLog.RecipientSender,
-		&modHistoryLog.Count,
-		&modHistoryLog.BalanceOld,
-		&modHistoryLog.BalanceNew,
-		&modHistoryLog.Time,
-		&modHistoryLog.OwnerID,
-	)
+func (service *Service) ShowOperationsLogByOwnerId(id int) (models []ModelOperationsLog, err error) {
+	rows, err := service.pool.Query(context.Background(), `
+SELECT id, name, number,recipientSender,count, balanceold, balancenew, time, owner_id 
+FROM historyoperationslog  
+WHERE owner_id= $1`, id)
 	if err != nil {
 		return nil, fmt.Errorf("can't get history from db: %w", err)
 	}
-	model = append(model, modHistoryLog)
-	return model, nil
+	defer rows.Close()
+
+	for rows.Next() {
+		model := ModelOperationsLog{}
+		err = rows.Scan(
+			&model.Id,
+			&model.Name,
+			&model.Number,
+			&model.RecipientSender,
+			&model.Count,
+			&model.BalanceOld,
+			&model.BalanceNew,
+			&model.Time,
+			&model.OwnerID)
+		if err != nil {
+			return nil, fmt.Errorf("can't get history from db: %w", err)
+		}
+		models = append(models, model)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("can't get history from db: %w", err)
+	}
+	return models, nil
 }
 
-func (service *Service) AddNewHistory(model ModelOperationsLog) {
-	_, err := service.pool.Exec(context.Background(), `
+func (service *Service) AddNewHistory(model ModelOperationsLog) (err error) {
+	log.Print("started add new history")
+	log.Print("add model to db")
+	_, err = service.pool.Exec(context.Background(), `
 	INSERT INTO historyoperationslog(name, number,recipientSender,count, balanceold, balancenew, time, owner_id)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
 		model.Name,
@@ -152,23 +165,27 @@ func (service *Service) AddNewHistory(model ModelOperationsLog) {
 	)
 	if err != nil {
 		log.Printf("can't exec insert add history card: %d", err)
+		return err
 	}
-	return
+	log.Print("saved model to db")
+	log.Print("finish add model to db")
+	return nil
 }
 
 type ModelOperationsLog struct {
-	Id              int
-	Name            string
-	Number          string
-	RecipientSender string
-	Count           int64
-	BalanceOld      int64
-	BalanceNew      int64
-	Time            int64
-	OwnerID         int64
+	Id              int    `json:"id"`
+	Name            string `json:"name"`
+	Number          string `json:"number"`
+	RecipientSender string `json:"recipientsender"`
+	Count           int64  `json:"count"`
+	BalanceOld      int64  `json:"balanceold"`
+	BalanceNew      int64  `json:"balancenew"`
+	Time            int64  `json:"time"`
+	OwnerID         int64  `json:"ownerid"`
 }
+
 type ModelTransferMoneyCardToCard struct {
-	IdCardSender        int
-	NumberCardRecipient string
-	Count               int64
+	IdCardSender        int    `json:"id_card_sender"`
+	NumberCardRecipient string `json:"number_card_recipient"`
+	Count               int64  `json:"count"`
 }

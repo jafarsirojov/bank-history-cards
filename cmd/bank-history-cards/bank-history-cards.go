@@ -18,7 +18,7 @@ var (
 	dsn  = flag.String("dsn", "", "Postgres DSN")
 )
 
-//-host 0.0.0.0 -port 9010 -dsn postgres://user:pass@localhost:5301/app
+//-host 0.0.0.0 -port 9010 -dsn postgres://user:pass@localhost:5501/app
 const ENV_PORT = "PORT"
 const ENV_DSN = "DATABASE_URL"
 const ENV_HOST = "HOST"
