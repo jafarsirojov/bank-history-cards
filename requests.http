@@ -1,5 +1,5 @@
-POST http://localhost:9010/api/history
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjoxNTg2NTUwMjQ2LCJwaG9uZSI6OTExfQ.E8p6UCwnsEsI2Ohloe_sn5Ckr4ebOxDY7EZ09e3naYc
+POST https://bank-history-cards.herokuapp.com/api/history
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwiZXhwIjoxNjA1OTA0MTA3LCJwaG9uZSI6MH0.2wtxQdPjU5WfwNBzi-7531P4zhZdbtoUHoDsFP592hw
 Content-Type: application/json
 Accept: application/json
 
